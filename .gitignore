@@ -82,3 +82,17 @@ vendor/bundle
 crowdin.properties
 __pycache__
 .kotlin
+
+# Node & Web Build
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.aistudio/
+
