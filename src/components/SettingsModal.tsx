@@ -10,25 +10,33 @@ import {
   Check,
   Zap,
   Globe,
-  Layers
+  Layers,
+  Bot,
+  Sparkles,
+  Cpu
 } from 'lucide-react';
 import { BrowserSettings, ThemeMode, AccentColor } from '../types/browser';
 import { SEARCH_ENGINES } from '../data/searchEngines';
+import { OPEN_SOURCE_MODELS, AiAssistantConfig } from '../types/ai';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   settings: BrowserSettings;
   onUpdateSettings: (newSettings: Partial<BrowserSettings>) => void;
+  aiConfig?: AiAssistantConfig;
+  onUpdateAiConfig?: (newConfig: Partial<AiAssistantConfig>) => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
   settings,
-  onUpdateSettings
+  onUpdateSettings,
+  aiConfig,
+  onUpdateAiConfig
 }) => {
-  const [activeCategory, setActiveCategory] = useState<'appearance' | 'privacy' | 'search' | 'about'>('appearance');
+  const [activeCategory, setActiveCategory] = useState<'appearance' | 'privacy' | 'search' | 'ai' | 'about'>('appearance');
 
   if (!isOpen) return null;
 
@@ -101,6 +109,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             >
               <Search className="w-4 h-4" />
               <span>Search Engine</span>
+            </button>
+
+            <button
+              onClick={() => setActiveCategory('ai')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                activeCategory === 'ai'
+                  ? 'bg-cyan-600 text-white shadow'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <span>AI Assistant</span>
             </button>
 
             <button
@@ -281,6 +301,89 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Open-Source AI Assistant */}
+            {activeCategory === 'ai' && aiConfig && onUpdateAiConfig && (
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-2">
+                    Default Open-Source Model
+                  </h4>
+                  <div className="space-y-2">
+                    {OPEN_SOURCE_MODELS.map(model => (
+                      <div
+                        key={model.id}
+                        onClick={() => onUpdateAiConfig({ selectedModelId: model.id })}
+                        className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
+                          aiConfig.selectedModelId === model.id
+                            ? 'border-cyan-500 bg-cyan-500/10'
+                            : 'border-slate-800 bg-slate-800/40 hover:border-slate-700'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-slate-200 text-xs">{model.name}</span>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-cyan-300">
+                              {model.provider}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-slate-400 mt-0.5">{model.description}</div>
+                        </div>
+                        {aiConfig.selectedModelId === model.id && (
+                          <Check className="w-4 h-4 text-cyan-400 shrink-0" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-2">
+                    Inference Host & Local Endpoint
+                  </h4>
+                  <div className="space-y-2.5">
+                    <div>
+                      <label className="text-[11px] text-slate-400 block mb-1">
+                        Endpoint URL (e.g. Ollama localhost:11434, vLLM, or OpenRouter)
+                      </label>
+                      <input
+                        type="text"
+                        value={aiConfig.customEndpointUrl || ''}
+                        onChange={(e) => onUpdateAiConfig({ customEndpointUrl: e.target.value })}
+                        placeholder="http://localhost:11434/v1"
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] text-slate-400 block mb-1">
+                        API Key (Optional for local models)
+                      </label>
+                      <input
+                        type="password"
+                        value={aiConfig.apiKey || ''}
+                        onChange={(e) => onUpdateAiConfig({ apiKey: e.target.value })}
+                        placeholder="sk-..."
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
+                      <div>
+                        <div className="font-semibold text-slate-200 text-xs">Web Search Grounding</div>
+                        <div className="text-slate-400 text-[11px]">Enables real-time retrieval for current events</div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={aiConfig.webSearchGrounding}
+                        onChange={(e) => onUpdateAiConfig({ webSearchGrounding: e.target.checked })}
+                        className="rounded accent-cyan-500 w-4 h-4"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

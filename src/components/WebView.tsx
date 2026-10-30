@@ -15,6 +15,7 @@ interface WebViewProps {
   onToggleReaderMode: () => void;
   onToggleViewSource: () => void;
   onOpenTonWallet?: () => void;
+  onOpenAiAssistant?: () => void;
   walletAgenBalance?: number;
   pendingReward?: number;
 }
@@ -30,6 +31,7 @@ export const WebView: React.FC<WebViewProps> = ({
   onToggleReaderMode,
   onToggleViewSource,
   onOpenTonWallet,
+  onOpenAiAssistant,
   walletAgenBalance = 0,
   pendingReward = 0
 }) => {
@@ -52,6 +54,7 @@ export const WebView: React.FC<WebViewProps> = ({
         accentColor={accentColor}
         isIncognito={tab.isIncognito}
         onOpenTonWallet={onOpenTonWallet}
+        onOpenAiAssistant={onOpenAiAssistant}
         walletAgenBalance={walletAgenBalance}
         pendingReward={pendingReward}
       />

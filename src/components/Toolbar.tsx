@@ -25,7 +25,9 @@ import {
   ZoomIn,
   ZoomOut,
   Wallet,
-  Flame
+  Flame,
+  Bot,
+  Sparkles
 } from 'lucide-react';
 import { Tab, SearchEngine } from '../types/browser';
 import { SEARCH_ENGINES } from '../data/searchEngines';
@@ -42,6 +44,7 @@ interface ToolbarProps {
   onToggleBookmark: () => void;
   onOpenTabsDrawer: () => void;
   onOpenTonWallet: () => void;
+  onOpenAiAssistant: () => void;
   walletAgenBalance: number;
   pendingReward: number;
   onOpenSslDialog: () => void;
@@ -72,6 +75,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onToggleBookmark,
   onOpenTabsDrawer,
   onOpenTonWallet,
+  onOpenAiAssistant,
   walletAgenBalance,
   pendingReward,
   onOpenSslDialog,
@@ -303,6 +307,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </div>
         )}
       </div>
+
+      {/* Open-Source AI Assistant Button */}
+      <button
+        onClick={onOpenAiAssistant}
+        className="flex items-center gap-1.5 h-7 px-2 rounded-xl bg-gradient-to-r from-cyan-500/15 to-blue-500/10 hover:from-cyan-500/25 hover:to-blue-500/20 border border-cyan-500/40 text-cyan-300 text-xs font-semibold transition-all shadow-sm shrink-0"
+        title="Open-Source AI Assistant (DeepSeek / Llama)"
+      >
+        <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+        <span className="hidden sm:inline font-mono text-[11px] font-bold text-cyan-300">AI</span>
+      </button>
 
       {/* TON Wallet Button with AGEN balance */}
       <button
@@ -562,6 +576,22 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             >
               <Shield className="w-4 h-4 text-rose-400" />
               <span>AdBlocker & Privacy</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onOpenAiAssistant();
+                setIsMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-between px-4 py-2 hover:bg-slate-700/60 text-cyan-300 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <span>AI Assistant (Open-Source)</span>
+              </div>
+              <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full font-mono font-bold">
+                DeepSeek / Llama
+              </span>
             </button>
 
             <button

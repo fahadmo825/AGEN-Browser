@@ -24,6 +24,8 @@ import { SettingsModal } from './components/SettingsModal';
 import { FindInPage } from './components/FindInPage';
 import { TonWalletDrawer } from './components/TonWalletDrawer';
 import { BrowseToEarnBanner } from './components/BrowseToEarnBanner';
+import { AiAssistantDrawer } from './components/AiAssistantDrawer';
+import { AiAssistantConfig } from './types/ai';
 import { getSamplePage } from './data/samplePages';
 
 const INITIAL_SETTINGS: BrowserSettings = {
@@ -64,6 +66,27 @@ export const App: React.FC = () => {
   const [wallet, setWallet] = useState<TonWallet>(() => getOrCreateWallet());
   const [transactions, setTransactions] = useState<WalletTransaction[]>(() => getTransactions());
   const [isWalletOpen, setIsWalletOpen] = useState(false);
+
+  // Open-Source AI Assistant State
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
+  const [aiConfig, setAiConfig] = useState<AiAssistantConfig>(() => {
+    try {
+      const saved = localStorage.getItem('fulguris_ai_config');
+      return saved ? JSON.parse(saved) : {
+        selectedModelId: 'deepseek-r1',
+        temperature: 0.7,
+        systemPrompt: 'You are a sovereign, privacy-preserving AI assistant integrated directly into the browser.',
+        webSearchGrounding: true
+      };
+    } catch {
+      return {
+        selectedModelId: 'deepseek-r1',
+        temperature: 0.7,
+        systemPrompt: 'You are a sovereign, privacy-preserving AI assistant integrated directly into the browser.',
+        webSearchGrounding: true
+      };
+    }
+  });
 
   // Browse-to-Earn Rewards State
   const [pendingReward, setPendingReward] = useState<number>(0.05);
@@ -154,6 +177,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('fulguris_bookmarks', JSON.stringify(bookmarks));
   }, [bookmarks]);
+
+  useEffect(() => {
+    localStorage.setItem('fulguris_ai_config', JSON.stringify(aiConfig));
+  }, [aiConfig]);
 
   useEffect(() => {
     if (!settings.clearHistoryOnExit) {
@@ -566,6 +593,7 @@ export const App: React.FC = () => {
           onToggleBookmark={toggleBookmark}
           onOpenTabsDrawer={() => setIsTabsDrawerOpen(true)}
           onOpenTonWallet={() => setIsWalletOpen(true)}
+          onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
           walletAgenBalance={wallet.agenBalance}
           pendingReward={pendingReward}
           onOpenSslDialog={() => setIsSslDialogOpen(true)}
@@ -598,6 +626,7 @@ export const App: React.FC = () => {
           onToggleReaderMode={toggleReaderMode}
           onToggleViewSource={toggleViewSource}
           onOpenTonWallet={() => setIsWalletOpen(true)}
+          onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
           walletAgenBalance={wallet.agenBalance}
           pendingReward={pendingReward}
         />
@@ -617,6 +646,7 @@ export const App: React.FC = () => {
           onToggleBookmark={toggleBookmark}
           onOpenTabsDrawer={() => setIsTabsDrawerOpen(true)}
           onOpenTonWallet={() => setIsWalletOpen(true)}
+          onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
           walletAgenBalance={wallet.agenBalance}
           pendingReward={pendingReward}
           onOpenSslDialog={() => setIsSslDialogOpen(true)}
@@ -654,6 +684,16 @@ export const App: React.FC = () => {
         onClaimReward={handleClaimReward}
         onSendToken={handleSendToken}
         onWalletBackupConfirmed={handleWalletBackupConfirmed}
+      />
+
+      {/* Open-Source AI Assistant Drawer */}
+      <AiAssistantDrawer
+        isOpen={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
+        currentPageTitle={currentTab.title}
+        currentPageUrl={currentTab.url}
+        config={aiConfig}
+        onUpdateConfig={(updates) => setAiConfig(prev => ({ ...prev, ...updates }))}
       />
 
       {/* Tabs Drawer Modal */}
@@ -724,6 +764,8 @@ export const App: React.FC = () => {
         onClose={() => setIsSettingsModalOpen(false)}
         settings={settings}
         onUpdateSettings={(newVals) => setSettings(s => ({ ...s, ...newVals }))}
+        aiConfig={aiConfig}
+        onUpdateAiConfig={(updates) => setAiConfig(prev => ({ ...prev, ...updates }))}
       />
     </div>
   );
