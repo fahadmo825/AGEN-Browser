@@ -1,0 +1,8 @@
+{
+  "name": "Fulguris Web Browser",
+  "description": "Fast, modern, and privacy-focused web browser featuring ad-blocking, tab management, bookmarks, reader mode, and customizable themes.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
